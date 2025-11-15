@@ -1,0 +1,10 @@
+{
+  "user_id": "u_123",
+  "event_type": "link_bank_success",
+  "event_timestamp": "2025-10-31T15:00:00Z",
+  "properties": {},
+  "user_traits": {
+    "email": "maria@example.com",
+    "marketing_opt_in": true
+  }
+}

@@ -1,0 +1,45 @@
+rules:
+  - id: welcome_email
+    condition:
+      event_type: signup_completed
+      once: true
+      user_traits:
+        marketing_opt_in: true
+    action:
+      send_template: WELCOME_EMAIL
+      channel: email
+      reason: "signup completed, user opted in"
+
+  - id: bank_link_nudge
+    condition:
+      event_type: link_bank_success
+      within_hours_of:
+        event_type: signup_completed
+        hours: 24
+    action:
+      send_template: BANK_LINK_NUDGE_SMS
+      channel: sms
+      tone: "you’re almost ready to pay your rent"
+      reason: "bank linked within 24h of signup"
+
+  - id: insufficient_funds_email
+    condition:
+      event_type: payment_failed
+      properties:
+        failure_reason: INSUFFICIENT_FUNDS
+      once_per_day: true
+    action:
+      send_template: INSUFFICIENT_FUNDS_EMAIL
+      channel: email
+      reason: "payment failed: insufficient funds"
+
+  - id: high_risk_alert
+    condition:
+      event_type: payment_failed
+      properties:
+        attempt_number:
+          gte: 3
+    action:
+      escalate: HIGH_RISK_ALERT
+      channel: internal_alert
+      reason: "payment failed 3+ times"

@@ -1,0 +1,10 @@
+{
+  "user_id": "u_123",
+  "event_type": "signup_completed",
+  "event_timestamp": "2025-10-31T10:00:00Z",
+  "properties": {},
+  "user_traits": {
+    "email": "maria@example.com",
+    "marketing_opt_in": true
+  }
+}

@@ -1,0 +1,70 @@
+### POST signup_completed
+POST http://localhost:8000/events
+Content-Type: application/json
+
+{
+  "user_id": "u_123",
+  "event_type": "signup_completed",
+  "event_timestamp": "2025-10-31T10:00:00Z",
+  "properties": {},
+  "user_traits": {
+    "email": "maria@example.com",
+    "marketing_opt_in": true
+  }
+}
+
+### POST link_bank_success
+POST http://localhost:8000/events
+Content-Type: application/json
+
+{
+  "user_id": "u_123",
+  "event_type": "link_bank_success",
+  "event_timestamp": "2025-10-31T15:00:00Z",
+  "properties": {},
+  "user_traits": {
+    "email": "maria@example.com",
+    "marketing_opt_in": true
+  }
+}
+
+### POST payment_failed (INSUFFICIENT_FUNDS)
+POST http://localhost:8000/events
+Content-Type: application/json
+
+{
+  "user_id": "u_123",
+  "event_type": "payment_failed",
+  "event_timestamp": "2025-10-31T18:00:00Z",
+  "properties": {
+    "amount": 1425.0,
+    "attempt_number": 2,
+    "failure_reason": "INSUFFICIENT_FUNDS"
+  },
+  "user_traits": {
+    "email": "maria@example.com",
+    "marketing_opt_in": true
+  }
+}
+
+### POST payment_failed HIGH_RISK_ALERT
+POST http://localhost:8000/events
+Content-Type: application/json
+
+{
+  "user_id": "u_123",
+  "event_type": "payment_failed",
+  "event_timestamp": "2025-10-31T19:00:00Z",
+  "properties": {
+    "amount": 1425.0,
+    "attempt_number": 3,
+    "failure_reason": "INSUFFICIENT_FUNDS"
+  },
+  "user_traits": {
+    "email": "maria@example.com",
+    "marketing_opt_in": true
+  }
+}
+
+### GET audit
+GET http://localhost:8000/audit/u_123

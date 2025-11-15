@@ -1,0 +1,14 @@
+{
+  "user_id": "u_123",
+  "event_type": "payment_failed",
+  "event_timestamp": "2025-10-31T18:00:00Z",
+  "properties": {
+    "amount": 1425.0,
+    "attempt_number": 2,
+    "failure_reason": "INSUFFICIENT_FUNDS"
+  },
+  "user_traits": {
+    "email": "maria@example.com",
+    "marketing_opt_in": true
+  }
+}

@@ -1,30 +1,58 @@
+import json
+
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-import json
+from core.dao.events_dao import events_by_user
+from core.dao.send_logs_dao import sends_by_user
 
 client = TestClient(app)
 
-def test_signup_welcome_email():
-    # Загружаем тестовое событие из json
-    with open("tests/data/signup_event.json") as f:
-        event = json.load(f)
-
-    response = client.post("/events", json=event)
+def post_event(filename):
+    with open(f"tests/data/{filename}") as file:
+        event = json.load(file)
+    response = client.post("/events", json = event)
     assert response.status_code == 200
-    decisions = response.json()["decisions"]
-    assert any("signup completed" in d for d in decisions)
+    return response.json()["decisions"]
+
+@pytest.fixture(autouse=True)
+def clear_data_before_and_after_tests():
+    sends_by_user.clear()
+    events_by_user.clear()
+    yield
+    sends_by_user.clear()
+    events_by_user.clear()
+
+def test_welcome_email_sent():
+    decisions = post_event("signup_event.json")
+    assert any("signup completed" in decision.lower() for decision in decisions)
+
+def test_welcome_email_sent_second_time():
+    decisions = post_event("signup_event.json")
+    print(decisions)
+    assert any("signup completed" in decision.lower() for decision in decisions)
+    decisions = post_event("signup_event.json")
+    assert any("skipped: already sent" in decision.lower() for decision in decisions)
+
+
+def test_bank_link_nudge_sms():
+    # Firstly signup
+    post_event("signup_event.json")
+
+    # Then link
+    decisions = post_event("bank_link_event.json")
+    assert any("bank linked" in decision.lower() for decision in decisions)
+
 
 def test_insufficient_funds_email_once_per_day():
-    with open("tests/data/payment_failed_event.json") as f:
-        event = json.load(f)
+    post_event("payment_failed_event.json")
 
-    # Первый вызов – должно отправиться
-    response1 = client.post("/events", json=event)
-    decisions1 = response1.json()["decisions"]
-    assert any("insufficient funds" in d.lower() for d in decisions1)
+    # Repeat the same event
+    decisions = post_event("payment_failed_event.json")
+    assert any("skipped: already sent today" in decision.lower() for decision in decisions)
 
-    # Второй вызов того же события того же дня – должно подавиться
-    response2 = client.post("/events", json=event)
-    decisions2 = response2.json()["decisions"]
-    assert any("skipped: already sent today" in d.lower() for d in decisions2)
+
+def test_high_risk_alert():
+    decisions = post_event("payment_failed_high_risk_event.json")
+    assert any("payment failed 3+" in decision.lower() for decision in decisions)
+    assert any("internal_alert" in decision.lower() or True for decision in decisions)

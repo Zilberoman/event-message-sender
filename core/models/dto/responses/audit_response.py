@@ -2,8 +2,8 @@ from typing import List
 
 from pydantic import BaseModel
 
-from core.models.event import Event
-from core.models.send_log import SendLog
+from core.models.dto.event import Event
+from core.models.dto.send_log import SendLog
 
 
 class AuditResponse(BaseModel):
